@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import TodoList from './TodoList';
+// import TodoList from './TodoList';
 
 const Index = () => {
 	const [todo, setTodo] = useState("");
@@ -57,22 +57,16 @@ const Index = () => {
 
 
 	const multipleDlt = (multiDlt) => {
-		console.log(multiDlt);
 		var updateMyVal=[];
 		for (var key in multiDlt) {
 			if (multiDlt.hasOwnProperty(key)) {
 			   var obj = multiDlt[key];
 			   for (var prop in obj) {
 				  if (obj.hasOwnProperty(prop)) {
-					 console.log(prop + " = " + obj[prop]);
-					 updateMyVal.push(obj[prop])
-					 updateMyVal.forEach(val => {
-						const removeItem = items.filter((todo) => {
-							return todo.id !== val;
-						});
-						setItems(removeItem);
-					});
-						
+					  updateMyVal.push(obj[prop])
+					  var newArray = items.filter(item => !updateMyVal.includes(item.id))
+						setItems(newArray);	
+						setMultiDlt("")				
 				  }
 			   }
 			}
