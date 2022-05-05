@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css';
 import Layout from './components/App';
 import Home from './components/pages/index';
+import Checkbox from './components/pages/checkbox';
 
 
 
@@ -14,6 +15,7 @@ const Root =()=> {
             <Layout>
               <Routes>
                 <Route exact path={`${process.env.PUBLIC_URL}/`} element={<Home />} />
+                <Route exact path={`${process.env.PUBLIC_URL}/check`} element={<Checkbox />} />
               </Routes>
             </Layout>
           </BrowserRouter>

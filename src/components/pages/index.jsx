@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
 import TodoList from './TodoList';
 
 const Index = () => {
@@ -55,24 +54,43 @@ const Index = () => {
 		setIsEditing(true);
 		setCurrentTodo({ ...todo });
 	}
-	const togglebtn = (e) => {
-		let id = e.target.id
-		setMultiDlt([...multiDlt, { id: id, isChecked: true }]);
+
+
+	const multipleDlt = (multiDlt) => {
+		console.log(multiDlt);
+		var updateMyVal=[];
+		for (var key in multiDlt) {
+			if (multiDlt.hasOwnProperty(key)) {
+			   var obj = multiDlt[key];
+			   for (var prop in obj) {
+				  if (obj.hasOwnProperty(prop)) {
+					 console.log(prop + " = " + obj[prop]);
+					 updateMyVal.push(obj[prop])
+					 updateMyVal.forEach(val => {
+						const removeItem = items.filter((todo) => {
+							return todo.id !== val;
+						});
+						setItems(removeItem);
+					});
+						
+				  }
+			   }
+			}
+		 }
+	
 	}
 
-	const multipleDlt =(multiDlt)=>{
-      console.log(multiDlt);
-	  multiDlt.forEach(element => {
-		  const removeItem = items.filter((todo) => {
-			console.log(todo.id);
-			console.log(element.id);
-			return todo.id !== element.id;  
-		});
-		setItems(removeItem);
-	  });
-	
-	}
-	
+	const checkboxBtn = (item) => () => {
+		setMultiDlt((state) => ({
+			...state,
+			[item.id]: state[item.id]
+				? null
+				: {
+					id: item.id,
+				}
+		}));
+	};
+
 	return (
 		<>
 			<div className="container">
@@ -112,7 +130,13 @@ const Index = () => {
 									<ol className='m-0'>
 										{items.map((todos) => {
 											return <li key={todos.id}>
-												<input className="form-check-input" checked={multiDlt.isChecked ? true : false } onChange={togglebtn} type="checkbox" id={todos.id} /> {todos.text}
+												<input
+													onChange={checkboxBtn(todos)}
+													checked={multiDlt[todos.id] || false}
+													className="form-check-input"
+													type="checkbox"
+												/>
+												{todos.text}
 												<span className='float-end'>
 													<i className="fa fa-edit main-color m" onClick={() => {
 														updateItem(todos)
@@ -123,7 +147,7 @@ const Index = () => {
 										})}
 									</ol>
 									<div>
-										<button type="reset" className="btn multi-dlt rounded-circle border-3 btn-outline-danger mb-2" onClick={()=>multipleDlt(multiDlt)}> <i className="fa fa-trash"></i></button>
+										<button type="reset" className="btn multi-dlt rounded-circle border-3 btn-outline-danger mb-2" onClick={() => multipleDlt(multiDlt)}> <i className="fa fa-trash"></i></button>
 									</div>
 								</div>
 							</div>
