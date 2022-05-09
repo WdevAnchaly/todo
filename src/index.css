@@ -70,14 +70,6 @@ button.multi-dlt {
 	margin-top: .4em;
 	margin-bottom: 1em;
 }
-li i {
-	background-color: white;
-	border-radius: 50%;
-	border: 1px solid red;
-	color: #f3171b;
-	padding: 5px;
-	margin: 0 7px;
-  }
   ol li {
     list-style: none;
     display: flex;
@@ -88,7 +80,7 @@ li i {
 }
 li span {
     position: absolute;
-    left: 63%;
+    left: 60%;
 }
 .main-btn:hover,
 .main-btn:focus {
@@ -103,7 +95,7 @@ li span {
 
 @media screen and (max-width: 640px) {
 	.main-content {
-		width: 90%;
+		width: 90%!important;
 	}
 	li span{
 		left: 60%;
@@ -119,4 +111,41 @@ li span {
 		width: 75%;
 	}
 }
+
+
+
+.pagination .pagination-item {
+	padding: 0 12px;
+	height: 32px;
+	margin: auto 5px;
+	display: flex;
+	box-sizing: border-box;
+	align-items: center;
+	border-radius: 16px;
+	font-size: 13px;
+}
+.pagination .pagination-item {
+	background-color: rgba(0, 0, 0, 0.04);
+}
+.pagination .pagination-item:hover {
+	background-color: #ccc;
+	cursor: pointer;
+}
+.pagination .pagination-item.selected {
+	background-color: rgba(0, 0, 0, 0.08);
+}
+.pagination .pagination-item i {
+	color:rgba(0, 0, 0, 0.87);
+}
+.pagination .pagination-item.disabled {
+	pointer-events: none;
+}
+.pagination .pagination-item.disabled i{
+	color: rgba(0, 0, 0, 0.43);
+}
+.pagination .pagination-item.disabled:hover {
+	background-color: transparent;
+	cursor: default;
+}
+
 

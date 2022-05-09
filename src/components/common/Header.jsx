@@ -18,7 +18,7 @@ const Header = () => {
               <div className="d-flex">
                 <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                   <li className="nav-item">
-                    <NavLink className="nav-link" to="/" activeclassname="active">
+                  <NavLink className="nav-link" to="/" activeclassname="active">
                       Home
                     </NavLink>
                   </li>

@@ -1,156 +1,201 @@
-import React, { useState } from 'react'
-// import TodoList from './TodoList';
+import React, { useState, useMemo } from 'react'
+import Addtodos from './Addtodos';
+import Pagination from './pagination'
+import Search from './Search';
+import TodoList from './TodoList';
+let PageSize = 5;
 
 const Index = () => {
-	const [todo, setTodo] = useState("");
-	const [items, setItems] = useState([]);
-	const [isEditing, setIsEditing] = useState(false);
-	const [errors, setErrors] = useState(false);
-	const [currentTodo, setCurrentTodo] = useState();
-	const [multiDlt, setMultiDlt] = useState([]);
+    const [todo, setTodo] = useState("");
+    const [items, setItems] = useState([]);
+    const [filterSearch, setFilter] = useState([]);
+    const [currentTodo, setCurrentTodo] = useState();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [multiDlt, setMultiDlt] = useState([]);
+    const [status, setStatus] = useState({
+        isEditing: false,
+        searchShow: false,
+        errors: false
+    });
 
-	const todoList = (e) => {
-		setTodo(e.target.value)
-	}
+    const firstPageIndex = (currentPage - 1) * PageSize;
+    const lastPageIndex = firstPageIndex + PageSize;
+    const pageFilter = filterSearch.slice(firstPageIndex, lastPageIndex);
 
-	const listItems = (e) => {
-		e.preventDefault();
-		if (todo !== "") {
-			setItems([...items, { id: items.length + 1, text: todo.trim() }
-			]);
-			setTodo("");
-		} else {
-			setErrors(true);
-		}
-	}
+    // const paginate=(number)=>setCurrentPage(number);
 
-	const updateList = (e) => {
-		setCurrentTodo({ ...currentTodo, text: e.target.value });
-		setTodo("");
-	}
+    const todoList = (e) => {
+        setTodo(e.target.value)
+    }
 
-	const updateItems = (e) => {
-		e.preventDefault();
-		updateListItems(currentTodo.id, currentTodo);
-	}
+    const listItems = (e) => {
+        e.preventDefault();
+        const hasData = items.filter(
+            todos => {
+                return (
+                    todos
+                        .text
+                        .toLowerCase()
+                        .includes(todo.toLowerCase())
+                );
+            })
+        if (todo !== "" && hasData.length <= 0) {
+            const err = "errors";
+            setStatus((p) => { return { ...p, [err]: false } });
+            setItems([...items, { id: items.length + 1, text: todo.trim(), complete: false }
+            ]);
+            setTodo("");
+        } else {
+            const err = "errors";
+            setStatus((p) => {
+                return {
+                    ...p,
+                    [err]: true
+                }
+            });
+        }
+    }
 
-	const updateListItems = (id, updatedTodo) => {
-		const updatedItem = items.map((todo) => {
-			return todo.id === id ? updatedTodo : todo;
-		});
-		setIsEditing(false);
+    const updateList = (e) => {
+        setCurrentTodo({ ...currentTodo, text: e.target.value });
+        setTodo("");
+    }
 
-		setItems(updatedItem);
-	}
+    const updateItems = (e) => {
+        e.preventDefault();
+        updateListItems(currentTodo.id, currentTodo);
+    }
 
-	const dltItem = (id) => {
-		const removeItem = items.filter((todo) => {
-			return todo.id !== id;
-		});
-		setItems(removeItem);
-	}
+    const updateListItems = (id, updatedTodo) => {
+        const hasData = items.filter(
+            todos => {
+                return (
+                    todos
+                        .text
+                        .toLowerCase()
+                        .includes(currentTodo.text.toLowerCase())
+                );
+            })
+        if (currentTodo !== "" && hasData.length <= 0) {
+            const updatedItem = items.map((todo) => {
+                return todo.id === id ? updatedTodo : todo;
+            });
+            setStatus(false);
+            setItems(updatedItem);
+        } else {
+            const err = "errors";
+            setStatus((p) => {
+                return {
+                    ...p,
+                    [err]: true
+                }
+            });
+        }
+    }
 
-	const updateItem = (todo) => {
-		setIsEditing(true);
-		setCurrentTodo({ ...todo });
-	}
+    const dltItem = (id) => {
+        const removeItem = items.filter((todo) => {
+            return todo.id !== id;
+        });
+        setItems(removeItem);
+    }
 
+    const updateItem = (todo) => {
+        const edit = "isEditing";
+        setStatus((p) => { return { ...p, [edit]: true } });
+        setCurrentTodo({ ...todo });
+    }
 
-	const multipleDlt = (multiDlt) => {
-		var updateMyVal=[];
-		for (var key in multiDlt) {
-			if (multiDlt.hasOwnProperty(key)) {
-			   var obj = multiDlt[key];
-			   for (var prop in obj) {
-				  if (obj.hasOwnProperty(prop)) {
-					  updateMyVal.push(obj[prop])
-					  var newArray = items.filter(item => !updateMyVal.includes(item.id))
-						setItems(newArray);	
-						setMultiDlt("")				
-				  }
-			   }
-			}
-		 }
-	
-	}
+    const multipleDlt = (multiDlt) => {
+        var updateMyVal = [];
+        for (var key in multiDlt) {
+            if (multiDlt.hasOwnProperty(key)) {
+                var obj = multiDlt[key];
+                for (var prop in obj) {
+                    if (obj.hasOwnProperty(prop)) {
+                        updateMyVal.push(obj[prop])
+                        var newArray = items.filter(item => !updateMyVal.includes(item.id))
+                        setItems(newArray);
+                        setMultiDlt("")
+                    }
+                }
+            }
+        }
+    }
 
-	const checkboxBtn = (item) => () => {
-		setMultiDlt((state) => ({
-			...state,
-			[item.id]: state[item.id]
-				? null
-				: {
-					id: item.id,
-				}
-		}));
-	};
+    const checkboxBtn = (item) => () => {
+        setMultiDlt((state) => ({
+            ...state,
+            [item.id]: state[item.id]
+                ? null
+                : {
+                    id: item.id,
+                }
+        }));
+    };
 
-	return (
-		<>
-			<div className="container">
-				<div className="row main-content text-center w-75">
-					<div className="col-12 pt-2">
-						<h2 className='text-center main-bg m-3 mt-4 rounded p-2 shadow'>ToDo List</h2>
-						<div className="container p-md-5 pt-4">
+    const complited = (id) => {
+        let mapped = items.map(task => {
+            return task.id === id ? { ...task, complete: !items.complete } : { ...task };
+        });
+        setItems(mapped);
+    }
 
+    return (
+        <>
+            <div className="container">
+                <div className="row main-content w-75">
+                    <div className="col-12 pt-2">
+                        <div className='main-bg m-3 mt-4 rounded p-3 shadow'>
+                            <span className='fs-2'>ToDo App</span>
+                            <div className='float-end'>
+                                <Search
+                                    items={items}
+                                    setStatus={setStatus}
+                                    status={status}
+                                    setFilter={setFilter}
+                                />
+                            </div>
+                        </div>
 
-							{isEditing ? <> <form onSubmit={updateItems}>
-								<div className="row justify-content-center">
-									<div className="col-lg-7 col-md-7 offset-md-1 col-12 ">
-										<div className="pb-4">
-											<input type="text" name="todo" defaultValue={currentTodo.text} className={false ? "form__input form-control bd-red" : "form__input form-control"} onChange={updateList} placeholder="Edit ToDo Item" />
-										</div>
-									</div>
-									<div className="col-lg-4 col-md-4 col-12">
-										<button type="submit" value="Submit" className="btn main-btn text-center mx-2" > <i className="fa fa-plus"></i> </button>
-										<button type="reset" className="btn rounded-circle mx-2 border-3 btn-outline-danger mb-2" onClick={() => setIsEditing(false)}> <i className="fa fa-times"></i></button>
-									</div>
-								</div>
-							</form></> : <><form>
-								<div className="row justify-content-center">
-									<div className="col-lg-7 col-md-7 offset-md-1 col-10 ">
-										<div className="pb-4">
-											<input type="text" name="todo" value={todo} className={errors ? "form__input form-control bd-red" : "form__input form-control"} onChange={todoList} placeholder="Add ToDo Item" />
-										</div>
-									</div>
-									<div className="col-lg-4 col-md-4 col-2">
-										<button type="submit" value="Submit" className="btn main-btn text-center" onClick={listItems}> <i className="fa fa-plus"></i> </button>
-									</div>
-								</div>
-							</form></>}
-							<div className="row justify-content-center">
-								<div className="col-lg-11 offset-md-1 pt-4">
+                        <div className="container p-md-5 pt-4">
 
-									<ol className='m-0'>
-										{items.map((todos) => {
-											return <li key={todos.id}>
-												<input
-													onChange={checkboxBtn(todos)}
-													checked={multiDlt[todos.id] || false}
-													className="form-check-input"
-													type="checkbox"
-												/>
-												{todos.text}
-												<span className='float-end'>
-													<i className="fa fa-edit main-color m" onClick={() => {
-														updateItem(todos)
-													}}></i>
-													<i className="fa fa-trash" onClick={() => {
-														dltItem(todos.id)
-													}}></i></span></li>
-										})}
-									</ol>
-									<div>
-										<button type="reset" className="btn multi-dlt rounded-circle border-3 btn-outline-danger mb-2" onClick={() => multipleDlt(multiDlt)}> <i className="fa fa-trash"></i></button>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</>
-	)
+                            <Addtodos
+                                todo={todo}
+                                status={status}
+                                currentTodo={currentTodo}
+                                todoList={todoList}
+                                listItems={listItems}
+                                setStatus={setStatus}
+                                updateItems={updateItems}
+                                updateList={updateList}
+                            />
+
+                            <TodoList
+                                todos={items}
+                                checkboxBtn={checkboxBtn}
+                                updateItem={updateItem}
+                                status={status}
+                                dltItem={dltItem}
+                                multipleDlt={multipleDlt}
+                                complited={complited}
+                                multiDlt={multiDlt}
+                                filter={pageFilter}
+                            />
+                            {status.searchShow ?
+                                <Pagination
+                                setCurrentPage={setCurrentPage}
+                                    currentPage={currentPage}
+                                    totalPage={filterSearch.length}
+                                    pageItemSize={PageSize}
+                                    // onPageChange={page => setCurrentPage(page)}
+                                /> : ""}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+    )
 }
 
 export default Index
